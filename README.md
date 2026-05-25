@@ -1,10 +1,12 @@
 # Agent Workbench
 
-> 面向 Codex 及其他支持 AGENTS.md 的 AI assistant 的通用个人配置和指令集
+> 个人 AI assistant rules、skills 与同步工具，支持 Codex、Qoder 和
+> AGENTS.md 工作流，聚焦渐进式披露与 harness engineering
 
-一套可复用的个人级 AI assistant 配置，包含编码规范、Git 工作流、
-AGENTS 指令与 skills，同一份内容可以服务于 Codex 以及其他支持
-类似机制的开发工具。
+一套可复用的个人级 AI assistant 配置工作台，包含编码规范、Git 工作流、
+AGENTS 指令、按需加载的 references 与 skills。同一份内容可以服务于
+Codex、Qoder 以及其他支持类似机制的开发工具，用 rules 驱动可维护的
+assistant harness。
 
 ---
 
@@ -66,6 +68,9 @@ AGENTS.md 维护、测试验证等高频技术场景。
   `AGENTS.md` 会集中定义 reference search paths：Codex 优先解析
   `~/.codex/references/`，Qoder 优先解析项目 `.qoder/rules/references/`，
   并把另一侧作为 fallback，不依赖 Markdown 链接自动展开
+- **Harness engineering**: 把 always-on 基线、按需 references、skills
+  和同步脚本拆成可演进的 assistant runtime 配置，避免把长期规则散落在
+  单次 prompt 中
 
 ### Skills 与同步脚本
 
