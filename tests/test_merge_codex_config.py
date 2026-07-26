@@ -193,7 +193,7 @@ local_marker = "keep-me"
             merged = merge_codex_config.tomllib.loads(
                 target.read_text(encoding="utf-8")
             )
-            self.assertEqual(merged["model"], "gpt-5.6-terra")
+            self.assertEqual(merged["model"], "gpt-5.6-sol")
             self.assertEqual(merged["desktop"]["local_marker"], "keep-me")
             self.assertEqual(
                 (codex_root / "config.toml.backup").read_text(encoding="utf-8"),

@@ -21,8 +21,11 @@ cli_auth_credentials_store = "file"
 # 默认沟通风格：保持直接、务实、少废话。
 personality = "pragmatic"
 
-# 需要越权、联网、写出工作区等高风险动作时再弹确认。
+# 需要越过沙盒边界时按需发起审批。
 approval_policy = "on-request"
+
+# 将符合条件的审批请求交给自动 Reviewer，避免弹出人工确认。
+approvals_reviewer = "auto_review"
 
 # 允许读写当前 workspace，适合日常编码；不会给出全盘写权限。
 sandbox_mode = "workspace-write"
@@ -45,7 +48,7 @@ history.max_bytes = 104857600
 notify = ["/Users/lilinze/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 
 [sandbox_workspace_write]
-# shell 命令默认不允许直接访问外网；依赖安装、curl 等需要按需审批。
+# 允许 workspace-write 沙盒内的 shell 命令直接访问外网。
 network_access = true
 
 # 除当前 workspace 外，额外允许写入 /tmp，方便测试、构建和临时产物。
