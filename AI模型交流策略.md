@@ -5,6 +5,8 @@
 
 模型与 reasoning effort 的选择建议见 [AI 模型选择策略](./AI模型选择策略.md)。
 
+README.md 面向人类、AGENTS.md 面向 coding agent
+
 ## 1. 核心原则
 
 - **目标**：先围绕当前目标判断，不脱离目标做泛泛优化。
