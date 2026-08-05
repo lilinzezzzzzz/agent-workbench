@@ -36,6 +36,11 @@ Pydantic v2, SQLAlchemy 2.x, Alembic, AnyIO, HTTPX, and pytest.
   checks or set operations without ordering. Use concrete `list[T]`,
   `dict[K, V]`, or `set[T]` when mutation, concrete ownership, or
   concrete-container behavior is part of the contract.
+- On Python 3.9+, import collection ABCs such as `Iterable`, `Sequence`,
+  `Mapping`, and `Callable` from `collections.abc`, not their deprecated
+  `typing` aliases. Use `typing` for constructs it owns, such as `Any`,
+  `Literal`, `Protocol`, and `TypedDict`; preserve an established older-version
+  compatibility requirement.
 - Do not annotate a value as `Iterable[T]` when the implementation requires
   repeated traversal, `len()`, indexing, or materialized storage; choose the
   corresponding stronger interface or explicitly materialize it.
