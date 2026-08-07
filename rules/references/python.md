@@ -28,14 +28,18 @@ Pydantic v2, SQLAlchemy 2.x, Alembic, AnyIO, HTTPX, and pytest.
   is allowed; use it deliberately for dynamic values or when a more precise
   type adds little value. Validate or narrow it when runtime correctness,
   security, persistence, or a public contract depends on the value.
-- Use built-in generics and PEP 604 unions such as `X | None`. For container
-  annotations, choose the weakest `collections.abc` contract that supports
-  every operation the code requires: use `Iterable[T]` for single-pass
-  iteration only, `Sequence[T]` when order, `len()`, or index access is
-  required, `Mapping[K, V]` for key-based reads, and `Set[T]` for membership
-  checks or set operations without ordering. Use concrete `list[T]`,
-  `dict[K, V]`, or `set[T]` when mutation, concrete ownership, or
-  concrete-container behavior is part of the contract.
+- For nullable annotations in Python 3.10+ code, write `T | None`. Do not
+  introduce `typing.Optional`, `Optional[T]`, or `Union[T, None]`; preserve
+  them only when required by an established Python <3.10 compatibility
+  constraint or when an out-of-scope legacy file must remain stylistically
+  consistent.
+- Use built-in generics. For container annotations, choose the weakest
+  `collections.abc` contract that supports every operation the code requires:
+  use `Iterable[T]` for single-pass iteration only, `Sequence[T]` when order,
+  `len()`, or index access is required, `Mapping[K, V]` for key-based reads,
+  and `Set[T]` for membership checks or set operations without ordering. Use
+  concrete `list[T]`, `dict[K, V]`, or `set[T]` when mutation, concrete
+  ownership, or concrete-container behavior is part of the contract.
 - On Python 3.9+, import collection ABCs such as `Iterable`, `Sequence`,
   `Mapping`, and `Callable` from `collections.abc`, not their deprecated
   `typing` aliases. Use `typing` for constructs it owns, such as `Any`,

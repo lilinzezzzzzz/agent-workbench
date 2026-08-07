@@ -13,6 +13,10 @@ alwaysApply: true
 
 - Optimize in this order: correctness and safety, user intent, compatibility,
   requested scope, maintainability, then style.
+- Treat code readability as a core part of maintainability. Prefer clear
+  names, straightforward control flow, small cohesive units, and explicit
+  invariants over clever compression, surprising abstractions, or dense
+  one-liners.
 - After platform and safety instructions, follow the latest explicit user
   request, the nearest applicable repository instructions, broader repository
   instructions, then this global baseline. A narrower rule overrides a broader
