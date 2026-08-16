@@ -137,6 +137,89 @@ class SyncAgentRulesTest(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("WORKBUDDY_ROOT cannot be empty.", result.stderr)
 
+    def test_syncs_rules_to_opencode_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            opencode_root = directory / ".config" / "opencode"
+            codex_root = directory / ".codex"
+            workbuddy_root = directory / ".workbuddy"
+            environment = os.environ.copy()
+            environment["OPENCODE_ROOT"] = str(opencode_root)
+            environment["CODEX_ROOT"] = str(codex_root)
+            environment["WORKBUDDY_ROOT"] = str(workbuddy_root)
+
+            result = subprocess.run(
+                ["bash", str(SYNC_SCRIPT)],
+                input="1\n4\n",
+                text=True,
+                capture_output=True,
+                check=False,
+                cwd=ROOT,
+                env=environment,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn(
+                "4) opencode -> AGENTS.md + references", result.stderr
+            )
+            self.assertEqual(
+                (opencode_root / "AGENTS.md").read_bytes(),
+                (ROOT / "rules" / "agents.md").read_bytes(),
+            )
+
+            source_references = ROOT / "rules" / "references"
+            target_references = opencode_root / "references"
+            self.assert_directory_equal(source_references, target_references)
+
+            self.assertFalse(codex_root.exists())
+            self.assertFalse(workbuddy_root.exists())
+
+    def test_syncs_skills_to_opencode_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            opencode_root = directory / ".config" / "opencode"
+            codex_root = directory / ".codex"
+            workbuddy_root = directory / ".workbuddy"
+            qoder_root = directory / ".qoder"
+            environment = os.environ.copy()
+            environment["OPENCODE_ROOT"] = str(opencode_root)
+            environment["CODEX_ROOT"] = str(codex_root)
+            environment["WORKBUDDY_ROOT"] = str(workbuddy_root)
+            environment["QODER_ROOT"] = str(qoder_root)
+
+            result = subprocess.run(
+                ["bash", str(SYNC_SCRIPT)],
+                input="2\n1\n4\n",
+                text=True,
+                capture_output=True,
+                check=False,
+                cwd=ROOT,
+                env=environment,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            source_skills = ROOT / "skills"
+            target_skills = opencode_root / "skills"
+            expected_directories = [source_skills / "_shared"]
+            expected_directories.extend(
+                sorted(
+                    path
+                    for path in source_skills.iterdir()
+                    if path.is_dir() and (path / "SKILL.md").is_file()
+                )
+            )
+            self.assertEqual(
+                sorted(path.name for path in target_skills.iterdir()),
+                sorted(path.name for path in expected_directories),
+            )
+            for source_directory in expected_directories:
+                self.assert_directory_equal(
+                    source_directory, target_skills / source_directory.name
+                )
+            self.assertFalse(codex_root.exists())
+            self.assertFalse(workbuddy_root.exists())
+            self.assertFalse(qoder_root.exists())
+
     def test_syncs_all_skills_to_workbuddy_root(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             directory = Path(temporary_directory)

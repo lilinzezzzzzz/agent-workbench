@@ -12,6 +12,7 @@ SOURCE_SHARED_SKILLS_DIR="$SOURCE_SKILLS_DIR/_shared"
 CODEX_ROOT="${CODEX_ROOT:-$HOME/.codex}"
 WORKBUDDY_ROOT="${WORKBUDDY_ROOT:-$HOME/.workbuddy}"
 QODER_ROOT="${QODER_ROOT:-$HOME/.qoder}"
+OPENCODE_ROOT="${OPENCODE_ROOT:-$HOME/.config/opencode}"
 EXIT_SENTINEL="__SYNC_AGENTS_EXIT__"
 ALL_SKILLS_SENTINEL="__SYNC_AGENTS_ALL_SKILLS__"
 EXCLUDED_RULE_TOP_LEVEL_FILES=(
@@ -204,7 +205,8 @@ choose_rules_target() {
         echo "1) codex -> AGENTS.md + references" >&2
         echo "2) workbuddy -> AGENTS.md + references" >&2
         echo "3) qoder -> project .qoder path" >&2
-        echo "4) exit" >&2
+        echo "4) opencode -> AGENTS.md + references" >&2
+        echo "5) exit" >&2
         read -r -p "#? " target
         target="$(trim_spaces "$target")"
 
@@ -221,7 +223,11 @@ choose_rules_target() {
                 printf '%s\n' "qoder"
                 return 0
                 ;;
-            4|exit)
+            4|opencode)
+                printf '%s\n' "opencode"
+                return 0
+                ;;
+            5|exit)
                 printf '%s\n' "$EXIT_SENTINEL"
                 return 0
                 ;;
@@ -269,9 +275,9 @@ choose_target() {
     echo "Select target assistant:" >&2
     local target=""
 
-    select target in "codex" "workbuddy" "qoder" "exit"; do
+    select target in "codex" "workbuddy" "qoder" "opencode" "exit"; do
         case "$target" in
-            codex|workbuddy|qoder)
+            codex|workbuddy|qoder|opencode)
                 printf '%s\n' "$target"
                 return 0
                 ;;
@@ -298,6 +304,9 @@ resolve_target_roots() {
             ;;
         qoder)
             printf '%s\n' "$QODER_ROOT"
+            ;;
+        opencode)
+            printf '%s\n' "$OPENCODE_ROOT"
             ;;
         *)
             echo "Unsupported target assistant: $target" >&2
@@ -546,6 +555,9 @@ main() {
             ;;
         workbuddy)
             sync_global_rules_dir "$WORKBUDDY_ROOT" "WORKBUDDY_ROOT"
+            ;;
+        opencode)
+            sync_global_rules_dir "$OPENCODE_ROOT" "OPENCODE_ROOT"
             ;;
         *)
             echo "Unsupported rules target: $rules_target" >&2
