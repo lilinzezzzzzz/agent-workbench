@@ -19,8 +19,8 @@ code-agent-workbench/
 ├── pyproject.toml             # uv 项目与 Python 版本约束
 ├── uv.lock                    # uv 锁文件
 ├── sync-agents.sh            # 统一同步入口：rules / skills / Codex/OpenCode config
-├── configs/
-│   └── codex-config.toml     # Codex config 受管键模板
+├── codex/
+│   └── config.toml           # Codex config 受管键模板
 ├── opencode/
 │   └── opencode.json         # OpenCode 全局配置源文件
 ├── scripts/
@@ -156,7 +156,7 @@ skills/<skill-name>/
 **脚本功能说明**:
 
 - **内容选择**: 支持 `rules`、`skills`、`codex-config`、`opencode-config`
-- **config 流程**: 将 `configs/codex-config.toml` 中出现的受管键合并到
+- **config 流程**: 将 `codex/config.toml` 中出现的受管键合并到
   Codex 根目录的 `config.toml`，目标中的其他键和区块保持原样
 - **config 受管边界**: 每次以模板中当前存在的键为受管键；从模板删除键不会
   自动删除目标中的同名键，需要时应在目标配置中显式清理
@@ -190,7 +190,7 @@ skills/<skill-name>/
 - 选择 `rules` -> `qoder`：输入以 `.qoder` 结尾的项目目录，并把
   `agents.md` 和 `rules/references/` 下的规则文件同步到该目录下的
   `rules/`
-- 选择 `codex-config`：把 `configs/codex-config.toml` 中的受管键合并到
+- 选择 `codex-config`：把 `codex/config.toml` 中的受管键合并到
   Codex 根目录的 `config.toml`，同时备份原文件并保留本机专属配置
 - 选择 `opencode-config`：把 `opencode/opencode.json` 同步到
   `OPENCODE_ROOT/opencode.json`

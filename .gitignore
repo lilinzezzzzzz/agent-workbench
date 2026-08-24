@@ -141,7 +141,7 @@ env.bak/
 venv.bak/
 
 # Secrets
-configs/.secrets
+codex/.secrets
 *.pem
 *.key
 .env.local
