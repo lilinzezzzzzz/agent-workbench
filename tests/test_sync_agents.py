@@ -195,7 +195,7 @@ class SyncAgentRulesTest(unittest.TestCase):
             self.assertIn("4) opencode-config", result.stderr)
             self.assertEqual(
                 (opencode_root / "opencode.json").read_bytes(),
-                (ROOT / "opencode" / "opencode.json").read_bytes(),
+                (ROOT / "assistants-configs" / "opencode" / "opencode.json").read_bytes(),
             )
 
     def test_rejects_empty_opencode_root_for_config(self) -> None:

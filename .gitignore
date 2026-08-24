@@ -141,7 +141,7 @@ env.bak/
 venv.bak/
 
 # Secrets
-codex/.secrets
+assistants-configs/**/.secrets
 *.pem
 *.key
 .env.local

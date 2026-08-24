@@ -19,10 +19,11 @@ code-agent-workbench/
 ├── pyproject.toml             # uv 项目与 Python 版本约束
 ├── uv.lock                    # uv 锁文件
 ├── sync-agents.sh            # 统一同步入口：rules / skills / Codex/OpenCode config
-├── codex/
-│   └── config.toml           # Codex config 受管键模板
-├── opencode/
-│   └── opencode.json         # OpenCode 全局配置源文件
+├── assistants-configs/       # 各 assistant 配置源文件
+│   ├── codex/
+│   │   └── config.toml        # Codex config 受管键模板
+│   └── opencode/
+│       └── opencode.json      # OpenCode 全局配置源文件
 ├── scripts/
 │   └── merge_codex_config.py # 保留本机设置的 TOML 合并器
 ├── tests/
@@ -44,8 +45,6 @@ code-agent-workbench/
 │       ├── markdown-documentation.md  # 技术文档结构、证据与状态规则
 │       ├── python.md               # Python 规则
 │       └── verification.md         # 测试与验证规则
-├── agents/                   # Agent 配置文件（预留）
-├── events/                   # 事件处理配置（预留）
 ├── skills/
 │   ├── api-endpoint-analyzer/
 │   ├── git-code-reviewer/
@@ -107,8 +106,6 @@ code-agent-workbench/
 
 ### 扩展模块（预留）
 
-- **agents/**: 个人 Agent 行为定制
-- **events/**: 个人工作流事件处理
 - **skills/**: 个人专业技能模块
 
 ### GitHub rulesets
@@ -156,14 +153,14 @@ skills/<skill-name>/
 **脚本功能说明**:
 
 - **内容选择**: 支持 `rules`、`skills`、`codex-config`、`opencode-config`
-- **config 流程**: 将 `codex/config.toml` 中出现的受管键合并到
+- **config 流程**: 将 `assistants-configs/codex/config.toml` 中出现的受管键合并到
   Codex 根目录的 `config.toml`，目标中的其他键和区块保持原样
 - **config 受管边界**: 每次以模板中当前存在的键为受管键；从模板删除键不会
   自动删除目标中的同名键，需要时应在目标配置中显式清理
 - **config 备份**: 目标存在时先备份为 `config.toml.backup`；目标和备份
   都保持 `0600` 权限。备份保留最近一次同步前的版本；合并或 TOML 校验
   失败时不覆盖原文件
-- **OpenCode config 流程**: 将 `opencode/opencode.json` 直接同步到
+- **OpenCode config 流程**: 将 `assistants-configs/opencode/opencode.json` 直接同步到
   `OPENCODE_ROOT/opencode.json`；`OPENCODE_ROOT` 默认是
   `~/.config/opencode`
 - **rules 流程**: 先选择 `codex`、`workbuddy` 或 `qoder`；选择 `qoder`
@@ -190,9 +187,9 @@ skills/<skill-name>/
 - 选择 `rules` -> `qoder`：输入以 `.qoder` 结尾的项目目录，并把
   `agents.md` 和 `rules/references/` 下的规则文件同步到该目录下的
   `rules/`
-- 选择 `codex-config`：把 `codex/config.toml` 中的受管键合并到
+- 选择 `codex-config`：把 `assistants-configs/codex/config.toml` 中的受管键合并到
   Codex 根目录的 `config.toml`，同时备份原文件并保留本机专属配置
-- 选择 `opencode-config`：把 `opencode/opencode.json` 同步到
+- 选择 `opencode-config`：把 `assistants-configs/opencode/opencode.json` 同步到
   `OPENCODE_ROOT/opencode.json`
 - 选择 `skills`：选择一个 skill 或全部 skills，并同步到目标 assistant 的 `skills/`
 
