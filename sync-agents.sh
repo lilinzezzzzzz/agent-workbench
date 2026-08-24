@@ -7,6 +7,7 @@ SOURCE_AGENTS_FILE="$SOURCE_RULES_DIR/agents.md"
 SOURCE_REFERENCES_DIR="$SOURCE_RULES_DIR/references"
 SOURCE_CODEX_CONFIG_FILE="$SCRIPT_DIR/configs/codex-config.toml"
 CODEX_CONFIG_MERGE_SCRIPT="$SCRIPT_DIR/scripts/merge_codex_config.py"
+SOURCE_OPENCODE_CONFIG_FILE="$SCRIPT_DIR/opencode/opencode.json"
 SOURCE_SKILLS_DIR="$SCRIPT_DIR/skills"
 SOURCE_SHARED_SKILLS_DIR="$SOURCE_SKILLS_DIR/_shared"
 CODEX_ROOT="${CODEX_ROOT:-$HOME/.codex}"
@@ -169,7 +170,8 @@ choose_content() {
         echo "1) rules" >&2
         echo "2) skills" >&2
         echo "3) codex-config" >&2
-        echo "4) exit" >&2
+        echo "4) opencode-config" >&2
+        echo "5) exit" >&2
         read -r -p "#? " content
         content="$(trim_spaces "$content")"
 
@@ -186,7 +188,11 @@ choose_content() {
                 printf '%s\n' "config"
                 return 0
                 ;;
-            4|exit)
+            4|opencode-config)
+                printf '%s\n' "opencode-config"
+                return 0
+                ;;
+            5|exit)
                 printf '%s\n' "$EXIT_SENTINEL"
                 return 0
                 ;;
@@ -394,6 +400,12 @@ sync_codex_config_file() {
         "$target_root/config.toml"
 }
 
+sync_opencode_config_file() {
+    local target_root="$1"
+
+    sync_path "$SOURCE_OPENCODE_CONFIG_FILE" "$target_root/opencode.json"
+}
+
 sync_directory_entries() {
     local source_dir="$1"
     local target_dir="$2"
@@ -506,6 +518,7 @@ main() {
 
     require_file "$SOURCE_AGENTS_FILE" "Codex AGENTS source file"
     require_file "$SOURCE_CODEX_CONFIG_FILE" "Codex config source file"
+    require_file "$SOURCE_OPENCODE_CONFIG_FILE" "OpenCode config source file"
     require_dir "$SOURCE_RULES_DIR" "Rules source directory"
     require_dir "$SOURCE_REFERENCES_DIR" "Rules references source directory"
     require_dir "$SOURCE_SKILLS_DIR" "Skills source directory"
@@ -534,6 +547,17 @@ main() {
         fi
 
         sync_codex_config_file "$CODEX_ROOT"
+        return 0
+    fi
+
+    if [[ "$content" == "opencode-config" ]]; then
+        OPENCODE_ROOT="$(trim_spaces "$OPENCODE_ROOT")"
+        if [[ -z "$OPENCODE_ROOT" ]]; then
+            echo "OPENCODE_ROOT cannot be empty." >&2
+            exit 1
+        fi
+
+        sync_opencode_config_file "$OPENCODE_ROOT"
         return 0
     fi
 

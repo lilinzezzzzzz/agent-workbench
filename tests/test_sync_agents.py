@@ -174,6 +174,47 @@ class SyncAgentRulesTest(unittest.TestCase):
             self.assertFalse(codex_root.exists())
             self.assertFalse(workbuddy_root.exists())
 
+    def test_syncs_opencode_config_to_opencode_root(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            directory = Path(temporary_directory)
+            opencode_root = directory / ".config" / "opencode"
+            environment = os.environ.copy()
+            environment["OPENCODE_ROOT"] = str(opencode_root)
+
+            result = subprocess.run(
+                ["bash", str(SYNC_SCRIPT)],
+                input="4\n",
+                text=True,
+                capture_output=True,
+                check=False,
+                cwd=ROOT,
+                env=environment,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("4) opencode-config", result.stderr)
+            self.assertEqual(
+                (opencode_root / "opencode.json").read_bytes(),
+                (ROOT / "opencode" / "opencode.json").read_bytes(),
+            )
+
+    def test_rejects_empty_opencode_root_for_config(self) -> None:
+        environment = os.environ.copy()
+        environment["OPENCODE_ROOT"] = "   "
+
+        result = subprocess.run(
+            ["bash", str(SYNC_SCRIPT)],
+            input="4\n",
+            text=True,
+            capture_output=True,
+            check=False,
+            cwd=ROOT,
+            env=environment,
+        )
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("OPENCODE_ROOT cannot be empty.", result.stderr)
+
     def test_syncs_skills_to_opencode_root(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             directory = Path(temporary_directory)

@@ -18,9 +18,11 @@ code-agent-workbench/
 │   └── rulesets/             # GitHub repository ruleset exports
 ├── pyproject.toml             # uv 项目与 Python 版本约束
 ├── uv.lock                    # uv 锁文件
-├── sync-agents.sh            # 统一同步入口：rules / skills / Codex config
+├── sync-agents.sh            # 统一同步入口：rules / skills / Codex/OpenCode config
 ├── configs/
 │   └── codex-config.toml     # Codex config 受管键模板
+├── opencode/
+│   └── opencode.json         # OpenCode 全局配置源文件
 ├── scripts/
 │   └── merge_codex_config.py # 保留本机设置的 TOML 合并器
 ├── tests/
@@ -153,7 +155,7 @@ skills/<skill-name>/
 
 **脚本功能说明**:
 
-- **内容选择**: 支持 `rules`、`skills`、`codex-config`
+- **内容选择**: 支持 `rules`、`skills`、`codex-config`、`opencode-config`
 - **config 流程**: 将 `configs/codex-config.toml` 中出现的受管键合并到
   Codex 根目录的 `config.toml`，目标中的其他键和区块保持原样
 - **config 受管边界**: 每次以模板中当前存在的键为受管键；从模板删除键不会
@@ -161,15 +163,18 @@ skills/<skill-name>/
 - **config 备份**: 目标存在时先备份为 `config.toml.backup`；目标和备份
   都保持 `0600` 权限。备份保留最近一次同步前的版本；合并或 TOML 校验
   失败时不覆盖原文件
+- **OpenCode config 流程**: 将 `opencode/opencode.json` 直接同步到
+  `OPENCODE_ROOT/opencode.json`；`OPENCODE_ROOT` 默认是
+  `~/.config/opencode`
 - **rules 流程**: 先选择 `codex`、`workbuddy` 或 `qoder`；选择 `qoder`
   时必须输入以 `.qoder` 结尾的目标项目目录，例如
   `/path/to/project/.qoder`。Codex 和 WorkBuddy 的默认根目录可分别通过
   `CODEX_ROOT` 和 `WORKBUDDY_ROOT` 覆盖
 - **skills 流程**: 先选择具体 skill 或全部 skills，再选择目标 assistant
-- **目标选择**: rules 支持 `codex`、`workbuddy` 或 `qoder`；`skills`
-  支持 `codex`、`workbuddy` 或 `qoder`
-- **覆盖策略**: Codex config 按受管键合并；`AGENTS.md` 直接覆盖；顶层
-  `references/` 和 `skills/` 仅覆盖同名项
+- **目标选择**: rules 和 skills 支持 `codex`、`workbuddy`、`qoder` 或
+  `opencode`
+- **覆盖策略**: Codex config 按受管键合并；OpenCode config 和
+  `AGENTS.md` 直接覆盖；顶层 `references/` 和 `skills/` 仅覆盖同名项
 - **完整性校验**: Codex config 使用 TOML 解析和合并结果校验；其他文件使用
   SHA-256，目录使用 `diff -qr`
 - **依赖要求**: 需要 `diff`；`codex-config` 流程额外需要 `uv` 和 Python
@@ -187,6 +192,8 @@ skills/<skill-name>/
   `rules/`
 - 选择 `codex-config`：把 `configs/codex-config.toml` 中的受管键合并到
   Codex 根目录的 `config.toml`，同时备份原文件并保留本机专属配置
+- 选择 `opencode-config`：把 `opencode/opencode.json` 同步到
+  `OPENCODE_ROOT/opencode.json`
 - 选择 `skills`：选择一个 skill 或全部 skills，并同步到目标 assistant 的 `skills/`
 
 当前已维护的 skill 更适合以下场景：
