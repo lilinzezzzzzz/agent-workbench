@@ -1,11 +1,11 @@
 # Code Agent Workbench
 
-> 个人 AI assistant rules、skills 与同步工具，支持 Codex、WorkBuddy、Qoder 和
+> 个人 AI assistant rules、skills 与同步工具，支持 Codex、WorkBuddy 和
 > AGENTS.md 工作流，聚焦渐进式披露与 harness engineering
 
 一套可复用的个人级 AI assistant 配置工作台，包含编码规范、Git 工作流、
 AGENTS 指令、按需加载的 references 与 skills。同一份内容可以服务于
-Codex、WorkBuddy、Qoder 以及其他支持类似机制的开发工具，用 rules 驱动
+Codex、WorkBuddy 以及其他支持类似机制的开发工具，用 rules 驱动
 可维护的 assistant harness。
 
 ---
@@ -30,7 +30,7 @@ code-agent-workbench/
 │   ├── test_merge_codex_config.py  # Codex config 合并与入口测试
 │   └── test_sync_agents.py   # rules 目标选择与同步测试
 ├── rules/                    # 全局与项目级规则源文件
-│   ├── agents.md             # Codex/WorkBuddy AGENTS.md 与 Qoder rules 源模板
+│   ├── agents.md             # Codex/WorkBuddy AGENTS.md 源模板
 │   ├── reference-loading-test-prompts.md  # references 路由与精简回归提示词
 │   └── references/
 │       ├── ai-rag.md                # AI 应用、RAG、评估、安全与成本规则
@@ -67,9 +67,6 @@ code-agent-workbench/
 代码库发现、Git 工作流、Python、Go、AI/RAG、API 路由设计、后端可靠性、
 数据库访问、Schema/迁移、Markdown 文档、测试验证等高频
 技术场景。
-同步 Qoder 时，脚本会
-要求输入项目 `.qoder` 目录，并把 `agents.md` 和 `rules/references/`
-下的规则文件增量同步到该目录下的 `rules/`：
 
 - **适用范围**: Codex、WorkBuddy 和其他支持 `AGENTS.md` 规则注入的工具
 - **角色定位**: 跨项目安全基线、执行边界和渐进式规则路由
@@ -83,8 +80,8 @@ code-agent-workbench/
   下沉到 `rules/references/`，同步后分别位于 Codex 的
   `~/.codex/references/` 或 WorkBuddy 的 `~/.workbuddy/references/`。
   `AGENTS.md` 会集中定义 reference search paths：Codex 只解析
-  `~/.codex/references/`，WorkBuddy 只解析 `~/.workbuddy/references/`，
-  Qoder 解析项目 `.qoder/rules/references/`；无法识别 active assistant 时
+  `~/.codex/references/`，WorkBuddy 只解析 `~/.workbuddy/references/`；
+  无法识别 active assistant 时
   不加载 task-specific references，也不依赖 Markdown 链接自动展开
 - **Harness engineering**: 把 always-on 基线、按需 references、skills
   和同步脚本拆成可演进的 assistant runtime 配置，避免把长期规则散落在
@@ -96,8 +93,7 @@ code-agent-workbench/
 
 - **sync-agents.sh**: 统一同步入口，可交互选择 `rules` 或单个
   `skill`；同步 rules 到 Codex 或 WorkBuddy 时写入 `AGENTS.md` 和顶层
-  `references/`，同步 rules 到 Qoder 时写入指定项目 rules 目录；同步
-  Codex config 时只覆盖模板管理的键，并保留本机专属配置
+  `references/`；同步 Codex config 时只覆盖模板管理的键，并保留本机专属配置
 - **api-endpoint-analyzer**: 系统化分析 API endpoint 的请求、响应、业务流程与错误处理
 - **git-code-reviewer**: 基于 diff 输出高信号代码审查结论，优先发现 bug、回归和风险
 - **git-commit-helper**: 基于 staged diff 生成或执行规范的 Conventional Commit
@@ -143,8 +139,9 @@ skills/<skill-name>/
 
 ### 1. 应用个人配置
 
-执行统一同步脚本后，按提示选择要同步的内容类型。选择 `skills` 时，
-脚本会继续要求选择目标 assistant：
+执行统一同步脚本后，按提示选择要同步的内容类型。选择 `config` 时，
+脚本会继续要求选择目标 assistant（`codex` 或 `opencode`）；选择 `skills` 时，
+会先选择技能再选择目标 assistant：
 
 ```bash
 ./sync-agents.sh
@@ -152,7 +149,7 @@ skills/<skill-name>/
 
 **脚本功能说明**:
 
-- **内容选择**: 支持 `rules`、`skills`、`codex-config`、`opencode-config`
+- **内容选择**: 支持 `rules`、`skills`、`config`
 - **config 流程**: 将 `assistants-configs/codex/config.toml` 中出现的受管键合并到
   Codex 根目录的 `config.toml`，目标中的其他键和区块保持原样
 - **config 受管边界**: 每次以模板中当前存在的键为受管键；从模板删除键不会
@@ -163,18 +160,17 @@ skills/<skill-name>/
 - **OpenCode config 流程**: 将 `assistants-configs/opencode/opencode.json` 直接同步到
   `OPENCODE_ROOT/opencode.json`；`OPENCODE_ROOT` 默认是
   `~/.config/opencode`
-- **rules 流程**: 先选择 `codex`、`workbuddy` 或 `qoder`；选择 `qoder`
-  时必须输入以 `.qoder` 结尾的目标项目目录，例如
-  `/path/to/project/.qoder`。Codex 和 WorkBuddy 的默认根目录可分别通过
-  `CODEX_ROOT` 和 `WORKBUDDY_ROOT` 覆盖
+- **rules 流程**: 先选择 `codex`、`workbuddy`、`opencode` 或 `zcode`。
+  Codex、WorkBuddy、OpenCode 和 ZCode 的默认根目录可分别通过
+  `CODEX_ROOT`、`WORKBUDDY_ROOT`、`OPENCODE_ROOT` 和 `ZCODE_ROOT` 覆盖
 - **skills 流程**: 先选择具体 skill 或全部 skills，再选择目标 assistant
-- **目标选择**: rules 和 skills 支持 `codex`、`workbuddy`、`qoder` 或
-  `opencode`
+- **目标选择**: rules 和 skills 支持 `codex`、`workbuddy`、`opencode` 或
+  `zcode`
 - **覆盖策略**: Codex config 按受管键合并；OpenCode config 和
   `AGENTS.md` 直接覆盖；顶层 `references/` 和 `skills/` 仅覆盖同名项
 - **完整性校验**: Codex config 使用 TOML 解析和合并结果校验；其他文件使用
   SHA-256，目录使用 `diff -qr`
-- **依赖要求**: 需要 `diff`；`codex-config` 流程额外需要 `uv` 和 Python
+- **依赖要求**: 需要 `diff`；`config` 流程选择 `codex` 时额外需要 `uv` 和 Python
   3.11+。`uv` 根据项目 `pyproject.toml` 创建或复用虚拟环境；文件校验会
   优先使用 `sha256sum`，并兼容 `shasum` 或 `openssl`
 
@@ -184,12 +180,9 @@ skills/<skill-name>/
   `AGENTS.md`，并把 `rules/references/` 下的源规则同步到 `references/`
 - 选择 `rules` -> `workbuddy`：把 `rules/agents.md` 同步为 WorkBuddy 根目录的
   `AGENTS.md`，并把 `rules/references/` 下的源规则同步到 `references/`
-- 选择 `rules` -> `qoder`：输入以 `.qoder` 结尾的项目目录，并把
-  `agents.md` 和 `rules/references/` 下的规则文件同步到该目录下的
-  `rules/`
-- 选择 `codex-config`：把 `assistants-configs/codex/config.toml` 中的受管键合并到
+- 选择 `config` -> `codex`：把 `assistants-configs/codex/config.toml` 中的受管键合并到
   Codex 根目录的 `config.toml`，同时备份原文件并保留本机专属配置
-- 选择 `opencode-config`：把 `assistants-configs/opencode/opencode.json` 同步到
+- 选择 `config` -> `opencode`：把 `assistants-configs/opencode/opencode.json` 同步到
   `OPENCODE_ROOT/opencode.json`
 - 选择 `skills`：选择一个 skill 或全部 skills，并同步到目标 assistant 的 `skills/`
 

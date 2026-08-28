@@ -62,8 +62,8 @@ active assistant:
 
 - Codex: `~/.codex/references/<file>.md`
 - WorkBuddy: `~/.workbuddy/references/<file>.md`
-- Qoder: `<project-root>/.qoder/rules/references/<file>.md`
 - OpenCode: `~/.config/opencode/references/<file>.md`
+- ZCode: `~/.zcode/references/<file>.md`
 - Unknown assistant: do not load task-specific references
 
 ### Loading Rules

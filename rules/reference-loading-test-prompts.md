@@ -24,7 +24,7 @@ baseline，每次只删除或改写一组指令，然后使用同一批场景比
 ```text
 Codex: ~/.codex/references/<file>.md
 WorkBuddy: ~/.workbuddy/references/<file>.md
-Qoder: <project-root>/.qoder/rules/references/<file>.md
+ZCode: ~/.zcode/references/<file>.md
 Unknown assistant: 不加载 task-specific references
 ```
 

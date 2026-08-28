@@ -12,13 +12,10 @@ SOURCE_SKILLS_DIR="$SCRIPT_DIR/skills"
 SOURCE_SHARED_SKILLS_DIR="$SOURCE_SKILLS_DIR/_shared"
 CODEX_ROOT="${CODEX_ROOT:-$HOME/.codex}"
 WORKBUDDY_ROOT="${WORKBUDDY_ROOT:-$HOME/.workbuddy}"
-QODER_ROOT="${QODER_ROOT:-$HOME/.qoder}"
 OPENCODE_ROOT="${OPENCODE_ROOT:-$HOME/.config/opencode}"
+ZCODE_ROOT="${ZCODE_ROOT:-$HOME/.zcode}"
 EXIT_SENTINEL="__SYNC_AGENTS_EXIT__"
 ALL_SKILLS_SENTINEL="__SYNC_AGENTS_ALL_SKILLS__"
-EXCLUDED_RULE_TOP_LEVEL_FILES=(
-    "reference-loading-test-prompts.md"
-)
 
 require_command() {
     local command_name="$1"
@@ -53,22 +50,6 @@ command_exists() {
     local command_name="$1"
 
     command -v "$command_name" >/dev/null 2>&1
-}
-
-is_excluded_rule_top_level_entry() {
-    local entry_path="$1"
-    local entry_name=""
-    local excluded_name=""
-
-    entry_name="$(basename "$entry_path")"
-
-    for excluded_name in "${EXCLUDED_RULE_TOP_LEVEL_FILES[@]}"; do
-        if [[ "$entry_name" == "$excluded_name" ]]; then
-            return 0
-        fi
-    done
-
-    return 1
 }
 
 sha256_file() {
@@ -169,9 +150,8 @@ choose_content() {
     while true; do
         echo "1) rules" >&2
         echo "2) skills" >&2
-        echo "3) codex-config" >&2
-        echo "4) opencode-config" >&2
-        echo "5) exit" >&2
+        echo "3) config" >&2
+        echo "4) exit" >&2
         read -r -p "#? " content
         content="$(trim_spaces "$content")"
 
@@ -184,15 +164,11 @@ choose_content() {
                 printf '%s\n' "skills"
                 return 0
                 ;;
-            3|codex-config|config)
+            3|config|codex-config|opencode-config)
                 printf '%s\n' "config"
                 return 0
                 ;;
-            4|opencode-config)
-                printf '%s\n' "opencode-config"
-                return 0
-                ;;
-            5|exit)
+            4|exit)
                 printf '%s\n' "$EXIT_SENTINEL"
                 return 0
                 ;;
@@ -210,8 +186,8 @@ choose_rules_target() {
     while true; do
         echo "1) codex -> AGENTS.md + references" >&2
         echo "2) workbuddy -> AGENTS.md + references" >&2
-        echo "3) qoder -> project .qoder path" >&2
-        echo "4) opencode -> AGENTS.md + references" >&2
+        echo "3) opencode -> AGENTS.md + references" >&2
+        echo "4) zcode -> AGENTS.md + references" >&2
         echo "5) exit" >&2
         read -r -p "#? " target
         target="$(trim_spaces "$target")"
@@ -225,12 +201,12 @@ choose_rules_target() {
                 printf '%s\n' "workbuddy"
                 return 0
                 ;;
-            3|qoder)
-                printf '%s\n' "qoder"
+            3|opencode)
+                printf '%s\n' "opencode"
                 return 0
                 ;;
-            4|opencode)
-                printf '%s\n' "opencode"
+            4|zcode)
+                printf '%s\n' "zcode"
                 return 0
                 ;;
             5|exit)
@@ -244,46 +220,44 @@ choose_rules_target() {
     done
 }
 
-prompt_qoder_root_dir() {
-    local target_root=""
+choose_config_target() {
+    echo "Select config target:" >&2
+    local target=""
 
     while true; do
-        echo "Enter Qoder project .qoder path(Example: /path/to/project/.qoder):" >&2
-        read -r -p "#? " target_root
-        target_root="$(trim_spaces "$target_root")"
+        echo "1) codex -> config.toml" >&2
+        echo "2) opencode -> opencode.json" >&2
+        echo "3) exit" >&2
+        read -r -p "#? " target
+        target="$(trim_spaces "$target")"
 
-        if [[ -n "$target_root" ]]; then
-            if [[ "$(basename "$target_root")" != ".qoder" ]]; then
-                echo "Qoder project path must end with .qoder." >&2
-                continue
-            fi
-
-            if [[ ! -d "$target_root" ]]; then
-                echo "Qoder project .qoder directory not found: $target_root" >&2
-                continue
-            fi
-
-            printf '%s\n' "$target_root"
-            return 0
-        fi
-
-        echo "Qoder project .qoder path cannot be empty." >&2
+        case "$target" in
+            1|codex)
+                printf '%s\n' "codex"
+                return 0
+                ;;
+            2|opencode)
+                printf '%s\n' "opencode"
+                return 0
+                ;;
+            3|exit)
+                printf '%s\n' "$EXIT_SENTINEL"
+                return 0
+                ;;
+            *)
+                echo "Invalid selection, try again." >&2
+                ;;
+        esac
     done
-}
-
-resolve_qoder_rules_dir() {
-    local target_root="$1"
-
-    printf '%s\n' "$target_root/rules"
 }
 
 choose_target() {
     echo "Select target assistant:" >&2
     local target=""
 
-    select target in "codex" "workbuddy" "qoder" "opencode" "exit"; do
+    select target in "codex" "workbuddy" "opencode" "zcode" "exit"; do
         case "$target" in
-            codex|workbuddy|qoder|opencode)
+            codex|workbuddy|opencode|zcode)
                 printf '%s\n' "$target"
                 return 0
                 ;;
@@ -308,11 +282,11 @@ resolve_target_roots() {
         workbuddy)
             printf '%s\n' "$WORKBUDDY_ROOT"
             ;;
-        qoder)
-            printf '%s\n' "$QODER_ROOT"
-            ;;
         opencode)
             printf '%s\n' "$OPENCODE_ROOT"
+            ;;
+        zcode)
+            printf '%s\n' "$ZCODE_ROOT"
             ;;
         *)
             echo "Unsupported target assistant: $target" >&2
@@ -434,33 +408,6 @@ sync_references_dir() {
         "No syncable entries found under $SOURCE_REFERENCES_DIR"
 }
 
-sync_qoder_rules_dir() {
-    local target_dir="$1"
-    local references_dir="$target_dir/references"
-    local entry=""
-
-    mkdir -p "$target_dir"
-
-    sync_path "$SOURCE_AGENTS_FILE" "$target_dir/$(basename "$SOURCE_AGENTS_FILE")"
-
-    while IFS= read -r entry; do
-        if [[ "$entry" == "$SOURCE_AGENTS_FILE" || "$entry" == "$SOURCE_REFERENCES_DIR" ]]; then
-            continue
-        fi
-
-        if is_excluded_rule_top_level_entry "$entry"; then
-            continue
-        fi
-
-        sync_path "$entry" "$target_dir/$(basename "$entry")"
-    done < <(find "$SOURCE_RULES_DIR" -mindepth 1 -maxdepth 1 ! -name '.gitkeep' | sort)
-
-    sync_directory_entries \
-        "$SOURCE_REFERENCES_DIR" \
-        "$references_dir" \
-        "No syncable entries found under $SOURCE_REFERENCES_DIR"
-}
-
 sync_skill_dir() {
     local -a skills=()
     local -a selected_skills=()
@@ -507,9 +454,8 @@ sync_skill_dir() {
 
 main() {
     local content=""
-    local qoder_rules_dir=""
-    local qoder_root=""
     local rules_target=""
+    local config_target=""
 
     if [[ $# -ne 0 ]]; then
         echo "This script is interactive and does not accept command-line arguments." >&2
@@ -537,20 +483,25 @@ main() {
     fi
 
     if [[ "$content" == "config" ]]; then
-        require_file "$CODEX_CONFIG_MERGE_SCRIPT" "Codex config merge script"
-        require_command uv
-
-        CODEX_ROOT="$(trim_spaces "$CODEX_ROOT")"
-        if [[ -z "$CODEX_ROOT" ]]; then
-            echo "CODEX_ROOT cannot be empty." >&2
-            exit 1
+        config_target="$(choose_config_target)"
+        if [[ "$config_target" == "$EXIT_SENTINEL" ]]; then
+            exit 0
         fi
 
-        sync_codex_config_file "$CODEX_ROOT"
-        return 0
-    fi
+        if [[ "$config_target" == "codex" ]]; then
+            require_file "$CODEX_CONFIG_MERGE_SCRIPT" "Codex config merge script"
+            require_command uv
 
-    if [[ "$content" == "opencode-config" ]]; then
+            CODEX_ROOT="$(trim_spaces "$CODEX_ROOT")"
+            if [[ -z "$CODEX_ROOT" ]]; then
+                echo "CODEX_ROOT cannot be empty." >&2
+                exit 1
+            fi
+
+            sync_codex_config_file "$CODEX_ROOT"
+            return 0
+        fi
+
         OPENCODE_ROOT="$(trim_spaces "$OPENCODE_ROOT")"
         if [[ -z "$OPENCODE_ROOT" ]]; then
             echo "OPENCODE_ROOT cannot be empty." >&2
@@ -566,13 +517,6 @@ main() {
         exit 0
     fi
 
-    if [[ "$rules_target" == "qoder" ]]; then
-        qoder_root="$(prompt_qoder_root_dir)"
-        qoder_rules_dir="$(resolve_qoder_rules_dir "$qoder_root")"
-        sync_qoder_rules_dir "$qoder_rules_dir"
-        return 0
-    fi
-
     case "$rules_target" in
         codex)
             sync_global_rules_dir "$CODEX_ROOT" "CODEX_ROOT"
@@ -582,6 +526,9 @@ main() {
             ;;
         opencode)
             sync_global_rules_dir "$OPENCODE_ROOT" "OPENCODE_ROOT"
+            ;;
+        zcode)
+            sync_global_rules_dir "$ZCODE_ROOT" "ZCODE_ROOT"
             ;;
         *)
             echo "Unsupported rules target: $rules_target" >&2

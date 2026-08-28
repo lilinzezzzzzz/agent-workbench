@@ -150,7 +150,7 @@ class SyncAgentRulesTest(unittest.TestCase):
 
             result = subprocess.run(
                 ["bash", str(SYNC_SCRIPT)],
-                input="1\n4\n",
+                input="1\n3\n",
                 text=True,
                 capture_output=True,
                 check=False,
@@ -160,7 +160,7 @@ class SyncAgentRulesTest(unittest.TestCase):
 
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn(
-                "4) opencode -> AGENTS.md + references", result.stderr
+                "3) opencode -> AGENTS.md + references", result.stderr
             )
             self.assertEqual(
                 (opencode_root / "AGENTS.md").read_bytes(),
@@ -183,7 +183,7 @@ class SyncAgentRulesTest(unittest.TestCase):
 
             result = subprocess.run(
                 ["bash", str(SYNC_SCRIPT)],
-                input="4\n",
+                input="3\n2\n",
                 text=True,
                 capture_output=True,
                 check=False,
@@ -192,7 +192,7 @@ class SyncAgentRulesTest(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn("4) opencode-config", result.stderr)
+            self.assertIn("2) opencode -> opencode.json", result.stderr)
             self.assertEqual(
                 (opencode_root / "opencode.json").read_bytes(),
                 (ROOT / "assistants-configs" / "opencode" / "opencode.json").read_bytes(),
@@ -204,7 +204,7 @@ class SyncAgentRulesTest(unittest.TestCase):
 
         result = subprocess.run(
             ["bash", str(SYNC_SCRIPT)],
-            input="4\n",
+            input="3\n2\n",
             text=True,
             capture_output=True,
             check=False,
@@ -221,16 +221,14 @@ class SyncAgentRulesTest(unittest.TestCase):
             opencode_root = directory / ".config" / "opencode"
             codex_root = directory / ".codex"
             workbuddy_root = directory / ".workbuddy"
-            qoder_root = directory / ".qoder"
             environment = os.environ.copy()
             environment["OPENCODE_ROOT"] = str(opencode_root)
             environment["CODEX_ROOT"] = str(codex_root)
             environment["WORKBUDDY_ROOT"] = str(workbuddy_root)
-            environment["QODER_ROOT"] = str(qoder_root)
 
             result = subprocess.run(
                 ["bash", str(SYNC_SCRIPT)],
-                input="2\n1\n4\n",
+                input="2\n1\n3\n",
                 text=True,
                 capture_output=True,
                 check=False,
@@ -259,18 +257,15 @@ class SyncAgentRulesTest(unittest.TestCase):
                 )
             self.assertFalse(codex_root.exists())
             self.assertFalse(workbuddy_root.exists())
-            self.assertFalse(qoder_root.exists())
 
     def test_syncs_all_skills_to_workbuddy_root(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             directory = Path(temporary_directory)
             codex_root = directory / ".codex"
             workbuddy_root = directory / ".workbuddy"
-            qoder_root = directory / ".qoder"
             environment = os.environ.copy()
             environment["CODEX_ROOT"] = str(codex_root)
             environment["WORKBUDDY_ROOT"] = str(workbuddy_root)
-            environment["QODER_ROOT"] = str(qoder_root)
 
             result = subprocess.run(
                 ["bash", str(SYNC_SCRIPT)],
@@ -303,7 +298,6 @@ class SyncAgentRulesTest(unittest.TestCase):
                     source_directory, target_skills / source_directory.name
                 )
             self.assertFalse(codex_root.exists())
-            self.assertFalse(qoder_root.exists())
 
 
 if __name__ == "__main__":
