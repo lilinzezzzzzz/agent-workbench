@@ -1,6 +1,6 @@
 ---
 name: git-code-reviewer
-description: Review PRs, MRs, commits, diffs, or workspace changes for Python backend services. Use for code review, CR, PR/MR review, 风险审查, 代码审查, 找风险, or 审核实现; prioritize correctness, regressions, contract and data safety, concurrency, security, performance, and concrete test gaps.
+description: Review the complete current branch against a user-specified base before opening a PR or MR for a Python backend service. Invoke explicitly with $git-code-reviewer for pre-PR/MR whole-branch review; do not use for workspace changes, individual commits or diffs, localized implementation checks, debugging, or ordinary requests to inspect code.
 ---
 
 # Code Review
@@ -9,9 +9,10 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 
 ## Scope Gate
 
-- Before resolving the comparison range, fetching a base, or reviewing code, require a base branch or base ref explicitly provided by the user. If missing, ask `基础分支是什么？` and do not begin the review. Do not infer it from PR metadata, repository defaults, the current branch, or local context.
+- This skill is only for a pre-PR/MR review of the complete current branch. Ordinary workspace, commit, diff, debugging, design-conformance, and localized code-review requests must use normal code inspection instead of this workflow.
+- Require a base branch or base ref explicitly provided by the user. If missing, ask `基础分支是什么？` and do not resolve the comparison range, fetch, or begin the review. Do not infer it from PR metadata, repository defaults, the current branch, or local context.
 - After receiving the base, load and follow [../_shared/git-remote-base-resolution.md](../_shared/git-remote-base-resolution.md) for ref resolution and freshness.
-- Use the user-provided PR, MR, commit range, or diff as the review artifact. For workspace reviews, include tracked staged and unstaged changes by default.
+- Review the committed branch delta from the merge base through the current `HEAD`. Report tracked staged, unstaged, and relevant untracked workspace changes separately; do not silently include them in the branch artifact.
 
 ## Workflow
 
