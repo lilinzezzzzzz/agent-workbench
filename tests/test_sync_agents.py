@@ -98,6 +98,46 @@ class SyncAgentRulesTest(unittest.TestCase):
             )
             self.assert_directory_equal(codex_root, workbuddy_root)
 
+    def test_rules_mirror_references_without_removing_sibling_content(self) -> None:
+        targets = (
+            ("CODEX_ROOT", "1"),
+            ("WORKBUDDY_ROOT", "2"),
+            ("OPENCODE_ROOT", "3"),
+            ("ZCODE_ROOT", "4"),
+        )
+        for variable, selection in targets:
+            with self.subTest(target=variable), tempfile.TemporaryDirectory() as temporary_directory:
+                target = Path(temporary_directory) / "assistant root"
+                references = target / "references"
+                obsolete = references / "obsolete"
+                obsolete.mkdir(parents=True)
+                (obsolete / "nested.md").write_text("obsolete", encoding="utf-8")
+                (references / "ai-rag.md").write_text("legacy", encoding="utf-8")
+                (references / ".custom").write_text("hidden", encoding="utf-8")
+                (references / "python.md").write_text("modified", encoding="utf-8")
+                skill = target / "skills" / "personal" / "SKILL.md"
+                skill.parent.mkdir(parents=True)
+                skill.write_text("personal skill", encoding="utf-8")
+                config = target / "config.toml"
+                config.write_text("# personal config", encoding="utf-8")
+                environment = os.environ.copy()
+                environment[variable] = str(target)
+
+                result = subprocess.run(
+                    ["bash", str(SYNC_SCRIPT)],
+                    input=f"1\n{selection}\n",
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                    cwd=ROOT,
+                    env=environment,
+                )
+
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assert_directory_equal(ROOT / "rules" / "references", references)
+                self.assertEqual(skill.read_text(encoding="utf-8"), "personal skill")
+                self.assertEqual(config.read_text(encoding="utf-8"), "# personal config")
+
     def test_workbuddy_defaults_to_home_dot_workbuddy(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             directory = Path(temporary_directory)

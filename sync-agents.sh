@@ -380,32 +380,10 @@ sync_opencode_config_file() {
     sync_path "$SOURCE_OPENCODE_CONFIG_FILE" "$target_root/opencode.json"
 }
 
-sync_directory_entries() {
-    local source_dir="$1"
-    local target_dir="$2"
-    local empty_message="$3"
-    local entry=""
-    local entry_count=0
-
-    mkdir -p "$target_dir"
-
-    while IFS= read -r entry; do
-        sync_path "$entry" "$target_dir/$(basename "$entry")"
-        entry_count=$((entry_count + 1))
-    done < <(find "$source_dir" -mindepth 1 -maxdepth 1 ! -name '.gitkeep' | sort)
-
-    if [[ "$entry_count" -eq 0 ]]; then
-        echo "$empty_message. Ensured target directory exists: $target_dir"
-    fi
-}
-
 sync_references_dir() {
     local target_dir="$1"
 
-    sync_directory_entries \
-        "$SOURCE_REFERENCES_DIR" \
-        "$target_dir/references" \
-        "No syncable entries found under $SOURCE_REFERENCES_DIR"
+    sync_path "$SOURCE_REFERENCES_DIR" "$target_dir/references"
 }
 
 sync_skill_dir() {

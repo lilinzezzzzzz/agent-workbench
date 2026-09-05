@@ -168,11 +168,13 @@ skills/<skill-name>/
 - **目标选择**: rules 和 skills 支持 `codex`、`workbuddy`、`opencode` 或
   `zcode`
 - **覆盖策略**: Codex config 按受管键合并；OpenCode config 和
-  `AGENTS.md` 直接覆盖；顶层 `references/` 和 `skills/` 仅覆盖同名项
+  `AGENTS.md` 直接覆盖；`references/` 全量镜像覆盖，整个目标目录由本仓库管理，
+  目标独有文件、子目录和隐藏文件都会被删除，同名文件中的个人修改也会被覆盖。
+  需保留的自定义规则应在同步前移出该目录；`skills/` 仍仅覆盖选中的同名项
 - **AI/RAG 规则拆分迁移**: `ai-rag.md` 已由 `ai-applications.md` 和 `rag.md`
-  替代，两者按受影响行为独立加载。同步不会清理目标中的旧文件；从旧版本升级时，
-  先核对目标 `references/ai-rag.md` 是否含个人修改，将需保留的内容迁移后，
-  再由用户明确清理该旧文件。同步完成后检查目标 `AGENTS.md` 的路由只指向新文件。
+  替代，两者按受影响行为独立加载。执行 rules 同步会自动清理旧的
+  `references/ai-rag.md`；如有个人修改，先迁移需保留的内容。
+  同步完成后检查目标 `AGENTS.md` 的路由只指向新文件。
 - **完整性校验**: Codex config 使用 TOML 解析和合并结果校验；其他文件使用
   SHA-256，目录使用 `diff -qr`
 - **依赖要求**: 需要 `diff`；`config` 流程选择 `codex` 时额外需要 `uv` 和 Python
