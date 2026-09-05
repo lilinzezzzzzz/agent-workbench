@@ -33,7 +33,8 @@ code-agent-workbench/
 │   ├── agents.md             # Codex/WorkBuddy AGENTS.md 源模板
 │   ├── reference-loading-test-prompts.md  # references 路由与精简回归提示词
 │   └── references/
-│       ├── ai-rag.md                # AI 应用、RAG、评估、安全与成本规则
+│       ├── ai-applications.md       # 模型应用、工具调用、生成评估与成本规则
+│       ├── rag.md                   # 文档摄取、检索、索引、权限与检索评估规则
 │       ├── api-route-design.md      # HTTP method、资源与命令路径规则
 │       ├── backend-reliability.md  # 后端可靠性、安全、API/worker 规则
 │       ├── codebase-discovery.md   # 代码库上下文发现与影响面规则
@@ -64,7 +65,7 @@ code-agent-workbench/
 `AGENTS.md`，`rules/references/` 下的规则文件会同步到对应根目录的
 `references/`，供渐进式披露读取。默认根目录分别为 `~/.codex` 和
 `~/.workbuddy`。当前 references 覆盖执行流程、
-代码库发现、Git 工作流、Python、Go、AI/RAG、API 路由设计、后端可靠性、
+代码库发现、Git 工作流、Python、Go、AI 应用、RAG 检索、API 路由设计、后端可靠性、
 数据库访问、Schema/迁移、Markdown 文档、测试验证等高频
 技术场景。
 
@@ -75,7 +76,7 @@ code-agent-workbench/
   和非破坏性验证；外部、破坏性、高成本或扩张范围的动作需要确认
 - **规则质量**: 强规则必须有明确作用域、触发条件和可验证结果
 - **Git 规范**: 保护用户工作区和历史，仓库约定优先
-- **渐进式披露**: 执行流程、代码库发现、Git、Python、Go、AI/RAG、
+- **渐进式披露**: 执行流程、代码库发现、Git、Python、Go、AI 应用、RAG 检索、
   API 路由设计、后端可靠性、数据库访问、Schema/迁移、Markdown 文档和验证细则
   下沉到 `rules/references/`，同步后分别位于 Codex 的
   `~/.codex/references/` 或 WorkBuddy 的 `~/.workbuddy/references/`。
@@ -168,6 +169,10 @@ skills/<skill-name>/
   `zcode`
 - **覆盖策略**: Codex config 按受管键合并；OpenCode config 和
   `AGENTS.md` 直接覆盖；顶层 `references/` 和 `skills/` 仅覆盖同名项
+- **AI/RAG 规则拆分迁移**: `ai-rag.md` 已由 `ai-applications.md` 和 `rag.md`
+  替代，两者按受影响行为独立加载。同步不会清理目标中的旧文件；从旧版本升级时，
+  先核对目标 `references/ai-rag.md` 是否含个人修改，将需保留的内容迁移后，
+  再由用户明确清理该旧文件。同步完成后检查目标 `AGENTS.md` 的路由只指向新文件。
 - **完整性校验**: Codex config 使用 TOML 解析和合并结果校验；其他文件使用
   SHA-256，目录使用 `diff -qr`
 - **依赖要求**: 需要 `diff`；`config` 流程选择 `codex` 时额外需要 `uv` 和 Python

@@ -125,7 +125,8 @@ preparation and state the remaining gap.
 | `verification.md` | behavior changes, tests, CI, lint, type-checking, artifact validation, or verification claims |
 | `python.md` | Python code, packaging, dependencies, frameworks, workers, or tests |
 | `golang.md` | Go code, modules, package APIs, context, concurrency, tooling, or tests |
-| `ai-rag.md` | model/provider calls, prompts, agents, tool calling, retrieval, RAG, evaluation, AI safety, latency, or cost |
+| `ai-applications.md` | model/provider calls, prompts, agents, structured output, tool calling, generation evaluation, model safety, latency, or cost |
+| `rag.md` | document ingestion, chunking, retrieval embeddings, vector/hybrid search, reranking, document permissions, knowledge-index lifecycle, or retrieval evaluation |
 | `backend-reliability.md` | services, APIs, workers, auth, validation, external clients, failures, observability, or security |
 | `api-route-design.md` | HTTP paths, methods, resources, commands, endpoint contracts, OpenAPI, or SDK impact |
 | `database.md` | SQL/ORM access, data assembly, repositories, transactions, pagination, locking, batching, or query performance |

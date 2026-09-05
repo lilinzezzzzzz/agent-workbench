@@ -52,13 +52,9 @@ xxxxxxx
 ### 提示词优化
 
 ```text
-请依据下方 OpenAI 官方《Prompting best practices》分析审查xxxxx。
+请依据下方 OpenAI 官方 GPT-6 Astra 的最佳实践分析审查xxxxx。
 
-https://developers.openai.com/api/docs/guides/latest-model?model=gpt-5.6#prompting-best-practices
+https://developers.openai.com/api/docs/guides/latest-model?model=gpt-6-astra
 
-要求：
-1. 保留原提核心目标、必要约束和预期行为。
-2. 删除重复、冲突或低价值内容，消除歧义，并补齐会影响执行的关键信息。
-3. 先列出最值得调整的问题及理由。
-4. 将官方文档可直接支持的调整与你的补充建议分开说明；对不确定内容标注“待确认”，不要臆测。
+寻找不清晰的、冲突的或重叠的指令，这些指令可能会让你不必要地停止、要求多余的确认，或者让工作不完整。  特别注意关于自主性、澄清、批准和任务完成的规则。将有意设置的保障措施与那些意外地让常规工作需要确认的措辞区分开来。  对于每个问题，引用相关的指令，识别文件，解释它们如何可能影响你的行为，并提出具体的编辑建议。  保留明确的批准要求，并指出任何提议的变更会扩展你的权限。优先考虑那些会带来最大实际差异的变更。在更改任何文件之前，提出供审阅的编辑建议。
 ```

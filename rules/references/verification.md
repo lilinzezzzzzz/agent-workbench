@@ -54,6 +54,11 @@ repository convention justifies it.
 
 ## Evidence And Reporting
 
+- When a check fails, determine whether the failure was introduced by the
+  current change, is pre-existing, or is environmental. Fix failures caused
+  by the change. Do not expand into unrelated repairs without authorization.
+  Report unresolved failures and their impact; do not claim a passing check.
+  If the cause cannot be established from evidence, state that uncertainty.
 - Observe exit status and relevant output. A command that did not run to
   completion is not a pass.
 - Do not claim coverage unless measured. Do not infer runtime compatibility or
