@@ -82,7 +82,8 @@ tags, code generation, tools, and conventions are authoritative.
 - Use the standard `testing` package and existing helpers. Prefer table-driven
   tests only when they improve case clarity, and keep tests deterministic and
   parallel-safe.
-- Run targeted package tests first, then `go test ./...` and `go vet ./...`
-  when blast radius warrants it. Use `go test -race ./...` for concurrency or
-  shared-state changes when supported, and the repository vulnerability scan
-  for dependency or security-sensitive changes when available.
+- Select checks and stopping conditions according to `verification.md`. Start
+  with targeted package tests; use `go test ./...`, `go vet ./...`,
+  `go test -race ./...`, or the repository vulnerability scan when the relevant
+  failure modes or explicit repository requirements justify them and tooling
+  supports them.

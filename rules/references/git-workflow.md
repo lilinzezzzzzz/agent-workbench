@@ -11,7 +11,7 @@ the user's requested workflow.
 ## Workspace Safety
 
 - Inspect `git status --short`, the relevant staged/unstaged diff, current
-  branch, and required refs before staging, committing, switching, fetching,
+  branch, and required refs before staging, committing, switching,
   pulling, cherry-picking, merging, rebasing, reverting, resetting, stashing,
   tagging, or pushing.
 - Do not stage, stash, reformat, discard, or include unrelated work. If changes
@@ -39,12 +39,17 @@ the user's requested workflow.
 
 ## Fetch, Pull, And Upstreams
 
-- Verify the current branch, selected remote, upstream, default branch, and
-  ahead/behind or divergence state before fetching or pulling. Do not pull from
-  an inferred remote or while detached from a branch without an explicit plan.
-- Fetch only when current remote state matters and network access is
-  authorized. Do not imply a local remote-tracking ref is current without a
-  fetch or other evidence.
+- Before fetch, verify the selected remote and required refs. Fetch only when
+  fresh remote evidence matters and existing tool/network permissions and task
+  scope allow it. Missing current-branch upstream or default-branch information
+  does not block fetching an explicitly identified remote/ref. Preserve any
+  explicit network approval requirement.
+- Do not imply a local remote-tracking ref is current without a fetch or other
+  evidence.
+- Before integrating fetched changes, inspect the current branch, workspace,
+  upstream, and divergence, and follow the authorized history strategy. Do not
+  pull from an inferred remote or while detached from a branch without an
+  explicit plan.
 - Prefer fetch followed by an explicit fast-forward, rebase, or merge so the
   history strategy is visible. Use `pull --ff-only` when the local branch should
   contain no unique commits; if branches diverged, follow repository policy or

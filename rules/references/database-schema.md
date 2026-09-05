@@ -4,9 +4,11 @@ description: Load for persisted models, database schema, DDL, columns, denormali
 ---
 # Database Schema And Migration Rules
 
-Use these rules for persisted structure and data evolution. Establish the
-database engine and version, table size and traffic, ownership boundaries,
-deployment order, external readers, and rollback expectations first.
+Use these rules for persisted structure and data evolution. Verify from evidence
+the database engine and version, table size and traffic, ownership boundaries,
+deployment order, external readers, and rollback expectations relevant to the
+current step. Missing production-sizing or rollout evidence blocks dependent
+decisions or execution, not independent local preparation; state the gap.
 
 ## Fields And Constraints
 

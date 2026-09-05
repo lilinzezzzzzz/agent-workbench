@@ -4,9 +4,10 @@ description: Load for SQL or ORM access, joins, application-side data assembly, 
 ---
 # Database Access And Transaction Rules
 
-Use these rules for database access and persistence behavior. Confirm the
-target engine, version, workload, data volume, indexes, and transaction model
-before relying on dialect-specific behavior.
+Use these rules for database access and persistence behavior. Verify from
+evidence the engine, version, workload, data volume, indexes, and transaction
+model relevant to the current decision before relying on dialect-specific
+behavior or making workload-dependent claims.
 
 ## Query Shape And Performance
 
@@ -56,6 +57,8 @@ before relying on dialect-specific behavior.
   parameter limits, transaction duration, lock footprint, and memory.
 - Enforce business uniqueness and invariants in the database where the
   ownership model supports it. An application pre-check alone is race-prone.
+  For relationship integrity, follow `database-schema.md`'s logical-reference
+  policy; this rule does not require new physical foreign keys.
 - Define partial-failure and retry behavior for bulk operations. Make resumable
   jobs checkpointed or idempotent rather than restarting an unbounded batch.
 

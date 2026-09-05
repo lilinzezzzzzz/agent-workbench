@@ -124,6 +124,7 @@ Pydantic v2, SQLAlchemy 2.x, Alembic, AnyIO, HTTPX, and pytest.
 - Use the repository's test framework; for greenfield work, prefer pytest. Keep
   real domain logic with fakes or mocks only at external I/O and ownership
   boundaries.
-- Run targeted tests first, then the configured formatter or linter, type
-  checker, and broader test suite according to blast radius. In a standard `uv`
-  setup, use the corresponding `uv run ...` commands.
+- Select checks and stopping conditions according to `verification.md`, using
+  targeted tests and the configured formatter, linter, or type checker as
+  applicable. In a standard `uv` setup, use the corresponding `uv run ...`
+  commands.

@@ -14,25 +14,32 @@ repository convention justifies it.
 2. Choose the fastest check capable of falsifying it: focused static check,
    targeted unit test, integration test, build, render, migration rehearsal, or
    manual runtime observation.
-3. Add broader tests, lint, type-checking, race detection, security scans, or
-   end-to-end checks for shared, concurrent, persistence, auth, dependency, or
-   cross-service changes.
+3. Select additional checks for concrete failure modes: broader tests, lint,
+   type-checking, race detection, security scans, or end-to-end checks may be
+   relevant to shared, concurrent, persistence, auth, dependency, or
+   cross-service changes. These categories are not a mandatory checklist.
+   Complete explicitly required repository checks.
 4. Use repository commands, environments, fixtures, and helpers. Do not add a
    new test framework merely to validate a small change.
+5. Once selected checks pass, broaden or repeat them only for new changes,
+   failures, or identified unresolved risks; otherwise proceed to completion.
 
 ## Test Quality
 
 - Bug fixes should reproduce the failure and prove the corrected behavior when
   a practical automated test path exists.
 - Cover meaningful success, failure, boundary, and state-transition cases;
-  avoid duplicating implementation details in assertions.
+  avoid duplicating implementation details in assertions. Do not add tests
+  that merely mirror the implementation or duplicate adequate existing evidence.
 - Keep tests deterministic, isolated, and safe to repeat. Control time,
   randomness, concurrency, and external I/O with project-standard mechanisms.
 - Mock at ownership or external-system boundaries. Do not mock the behavior
   under test or claim integration coverage from fully mocked collaborators.
-- Never run destructive tests against production or shared data. Confirm the
-  target environment before migrations, backfills, load tests, or externally
-  visible side effects.
+- Never run destructive tests against production or shared data. Verify the
+  target environment from evidence before executing migrations, backfills,
+  load tests, or externally visible side effects. An unknown target blocks
+  execution, not independent local preparation. Preserve explicit approval
+  requirements for the operation.
 
 ## Non-Code Artifacts
 

@@ -7,6 +7,8 @@ description: Load for multi-file, ambiguous, risky, data-affecting, API-affectin
 Use this workflow when coordination prevents missed dependencies or unsafe
 sequencing. A focused change can proceed directly; a migration or public
 contract change needs explicit phases, compatibility, and rollback reasoning.
+Apply the global agent instructions' authorization and completion boundaries;
+planning is not a separate approval gate for already authorized work.
 
 ## Workflow
 
@@ -26,10 +28,13 @@ contract change needs explicit phases, compatibility, and rollback reasoning.
 
 ## Unresolved Decisions And Blockers
 
-- Request direction only when evidence cannot resolve materially different
-  public contracts, data models, migration strategies, dependency upgrades, or
-  architectures. Continue through low-risk choices resolved by repository
-  convention.
+- Ask when an unresolved choice materially changes the requested outcome,
+  compatibility, data safety, security, cost, or authorized external effects,
+  and cannot be resolved from instructions, evidence, repository conventions,
+  or a conservative reversible assumption.
+- The existence of multiple reasonable implementations is not itself a blocker.
+  Do not interrupt for optional preferences. Ask blocking questions promptly
+  after relevant inspection, and continue independent authorized work.
 - Exhaust safe, in-scope inspection and local alternatives before declaring a
   blocker. Never bypass approval, sandbox, credential, or environment
   boundaries with a workaround.
