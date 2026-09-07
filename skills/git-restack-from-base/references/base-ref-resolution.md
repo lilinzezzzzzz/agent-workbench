@@ -4,5 +4,5 @@ Use this guide when planning, confirming, or reporting a restack. For shared bas
 
 ## Confirmation and Reporting
 
-- Before apply mode, show the base branch provided by the user, the resolved base ref, the source branch, and the new branch name.
+- Before apply, show the user-provided base, resolved base ref and commit SHA, source ref and commit SHA, new branch name, selected commits (count and list), and material history effects. Obtain explicit approval for this concrete plan.
 - In the final report, include the base freshness fields required by the shared remote-base rule.
