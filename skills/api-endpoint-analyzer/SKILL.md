@@ -45,10 +45,10 @@ Do not edit code, schemas, tests, documentation, or external systems unless the 
    - Enumerate reachable validation, auth, permission, tenant, not-found, conflict, quota, rate-limit, dependency, timeout, cancellation, and framework-default failures.
    - Distinguish documented errors from implementation-reachable errors.
 
-6. Resolve uncertainty and stop.
-   - Stop when the user's core question is answered, material claims have evidence, conflicts are exposed, and remaining unknowns are labeled.
-   - Ask only when an ambiguity cannot be resolved from available artifacts and would materially change the conclusion.
-   - Otherwise state the assumption, missing evidence, affected conclusion, and smallest useful next check.
+6. Resolve uncertainty and complete the requested analysis.
+   - Ask as soon as a material ambiguity cannot be resolved from available artifacts; do not defer necessary clarification until the end. Continue independent analysis while awaiting the answer.
+   - Finish when all explicit questions and requested deliverables have been addressed, material claims have evidence, and conflicts and remaining unknowns are labeled.
+   - If part of the request is blocked, deliver completed analysis and identify the missing evidence, affected conclusion, and smallest useful next check. Do not present a partial answer as complete.
 
 ## Evidence Contract
 
@@ -58,9 +58,9 @@ Classify evidence before resolving disagreements:
 - **Implementation-reachable behavior**: Active route configuration, middleware, handlers, schemas, services, repositories, integrations, and workers. Prefer artifacts that directly control the path being analyzed.
 - **Declared contract**: OpenAPI, Swagger, protobuf, generated specifications, and maintained API documentation. Treat these as advertised expectations, not proof of implementation behavior.
 - **Tests and fixtures**: Evidence of expected or covered behavior, not proof of deployed behavior.
-- **Context and inference**: Comments, README files, issues, and framework conventions. Use them only as supporting context and label inference explicitly.
+- **Context and inference**: Comments, README files, issues, and framework conventions usually provide supporting context. Classify evidence by its role, maintenance status, and explicit adoption, not filename alone. A user-designated requirement or accepted repository decision may define intended behavior, but does not prove implementation or deployed behavior. Label inference explicitly.
 
-When sources disagree, report each representation and its impact instead of silently reconciling them. Use observed evidence for what happened in a specific execution, implementation evidence for generally reachable behavior, and the declared contract for compatibility expectations.
+When sources disagree, report each representation and its impact instead of silently reconciling them. Use observed evidence for what happened in a specific execution, implementation evidence for reachable behavior under evidenced conditions, and applicable requirements and maintained contracts for intended behavior and compatibility expectations.
 
 Call a conclusion `root cause` only when the evidence supports the causal path. Otherwise label it `可能原因`, `推断`, or `未验证` and give the minimum confirming check.
 
@@ -84,7 +84,7 @@ Match the answer to the task:
 - **Comprehensive endpoint documentation**: Cover request, response, flow, errors, side effects, consistency, and evidence using the full template.
 - **Docs or specification only**: Analyze the declared contract and mark implementation paths, hidden side effects, and real exception behavior as `未验证`.
 
-For important conclusions, cite a repository-relative `path:line` or `path:symbol` when available. Always surface material auth or tenant behavior, idempotency, state changes, external dependencies, persistence or cache effects, consistency, and failure propagation when present.
+For important conclusions, cite a repository-relative `path:line` or `path:symbol` when available. Include auth, tenant behavior, idempotency, state changes, external dependencies, persistence or cache effects, consistency, and failure propagation when they explain the requested behavior or materially qualify the answer. Do not enumerate unrelated endpoint properties merely because they exist.
 
 Use tables when repeated parameter, field, error, or comparison mappings become clearer. Use Mermaid only for non-trivial flows or branches. Do not invent fields, types, status codes, validation, security behavior, side effects, or runtime results. Avoid generic advice not tied to the analyzed path.
 

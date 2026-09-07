@@ -1,12 +1,12 @@
 # Endpoint Analysis Template
 
-Use this template for full endpoint analysis. Remove sections that are irrelevant to the endpoint, but keep request, response, flow, errors, and evidence unless the user asked for a brief answer.
+Use this template only for comprehensive documentation or an explicitly requested structure. Adapt labels and sections to the transport and available evidence. Examples are illustrative, not endpoint facts: replace or remove them. Distinguish unknown from absent or not applicable; never fill evidence gaps with sample values or framework assumptions. When the user explicitly requires this exact structure, retain it and explain unknown or inapplicable entries rather than silently removing them.
 
 ## 1. 接口概述
 
 | 项目 | 内容 |
 | --- | --- |
-| Endpoint | `METHOD /path` |
+| Endpoint / Operation | 已确认的 METHOD /path、RPC service/method 或消息入口 |
 | 作用 | 用一句话说明接口目标 |
 | Handler / Controller | 入口函数或类 |
 | 鉴权/权限 | 无 / Optional / Required，说明方式和权限点 |
@@ -43,15 +43,15 @@ Use this template for full endpoint analysis. Remove sections that are irrelevan
 
 ### 3.1 成功响应
 
-| 状态码 | 条件 | Body 结构 | 关键响应头 |
+| 状态码或完成信号 | 条件 | 响应或事件结构 | 相关元数据 |
 | --- | --- | --- | --- |
-| `200` | 正常成功 | `{...}` | 无 |
+| <已确认的状态码或完成信号> | <触发条件> | <响应或事件结构> | <相关元数据> |
 
 ### 3.2 字段说明
 
 | 字段 | 类型 | 来源 | 含义 |
 | --- | --- | --- | --- |
-| `data.id` | `string` | DB 主键 | 资源 ID |
+| <字段> | <已确认的类型> | <已确认的来源> | <含义> |
 
 ### 3.3 响应特性
 
@@ -62,7 +62,7 @@ Use this template for full endpoint analysis. Remove sections that are irrelevan
 
 ## 4. 业务流程
 
-复杂流程先给 Mermaid；简单流程可只用步骤列表。
+选择最清楚的表达方式。只有图示能帮助理解分支、异步延续或跨系统关系时才使用 Mermaid；其他情况使用简洁段落或步骤列表。
 
 ```mermaid
 flowchart TD
@@ -92,7 +92,7 @@ flowchart TD
 | --- | --- | --- | --- | --- |
 | `400` | 参数校验失败 | Handler / Schema | `{error: ...}` | 示例 |
 
-覆盖以下层级：
+按请求范围检查相关层级；仅列出有证据支持的错误行为，并标明重要的未知项：
 
 - Boundary errors：请求格式、参数校验、鉴权、权限、租户、限流
 - Domain errors：业务前置条件不满足、状态冲突、资源不存在
