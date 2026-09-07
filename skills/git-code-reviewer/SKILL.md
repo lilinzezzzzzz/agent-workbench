@@ -10,9 +10,11 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 ## Scope Gate
 
 - This skill is only for a pre-PR/MR review of the complete current branch. Ordinary workspace, commit, diff, debugging, design-conformance, and localized code-review requests must use normal code inspection instead of this workflow.
-- Require a base branch or base ref explicitly provided by the user. If missing, ask `基础分支是什么？` and do not resolve the comparison range, fetch, or begin the review. Do not infer it from PR metadata, repository defaults, the current branch, or local context.
+- Require a base branch or base ref explicitly provided by the user, including an earlier instruction that remains applicable to this review. If missing, ask `基础分支是什么？`; do not resolve the comparison range, fetch, or begin branch-delta review. Do not infer the base from PR metadata, repository defaults, the current branch, or local context.
+- Independent read-only preparation, such as locating repository instructions and inspecting workspace status, may continue while the base is missing. Once prerequisites are satisfied, complete the authorized review and report without asking whether to proceed.
 - After receiving the base, load and follow [../_shared/git-remote-base-resolution.md](../_shared/git-remote-base-resolution.md) for ref resolution and freshness.
-- Review the committed branch delta from the merge base through the current `HEAD`. Report tracked staged, unstaged, and relevant untracked workspace changes separately; do not silently include them in the branch artifact.
+- Review the committed branch delta from the merge base through the current `HEAD`. Report relevant staged, unstaged, and untracked workspace changes separately; do not silently include them in the branch artifact.
+- Keep evidence tied to the reviewed revision: when workspace changes affect inspected files or validation inputs, use committed content for branch conclusions and state which revision each check actually validates. Do not attribute workspace-only fixes or passing tests to `HEAD`. Preserve user changes; if committed-state validation is unavailable, report that limitation.
 
 ## Workflow
 
@@ -36,8 +38,8 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 ### 3. Validate Conclusions
 
 - Treat inspected code, configuration, tests, schemas, and command output as evidence. Keep inference and unverified assumptions separate from confirmed facts.
-- For high-risk stateful changes, test at least two concrete counterexamples such as partial retry, race, mixed-version rollout, or replay after cleanup.
-- Run focused, non-destructive validation when it can materially confirm or falsify a concern. Report what ran, what was skipped, and what remains unverified.
+- For high-risk stateful changes, challenge the conclusions with at least two relevant concrete counterexamples such as partial retry, race, mixed-version rollout, or replay after cleanup. Static reasoning is acceptable; distinguish it from executed tests.
+- Run focused, non-destructive checks when they can materially confirm or falsify a concern, and preserve required repository checks. Match validation to impact and risk. Do not add implementation-mirroring tests for low-impact, reversible changes. After relevant checks pass, broaden or repeat validation only for new changes, failures, or unresolved concerns. Report observed outcomes and material verification gaps.
 - Before finishing, check the changed path for dead parameters, unreachable branches, and obsolete wrappers.
 
 ### 4. Report
@@ -45,4 +47,4 @@ Turn a change set into evidence-backed findings. Prioritize correctness and oper
 - Load and follow [references/review-output-template.md](./references/review-output-template.md).
 - Report only concrete, actionable findings, ordered by user impact. Combine symptoms that share one root cause.
 - Report a missing test as a finding only when it hides a concrete contract, migration, security, concurrency, or failure-path risk.
-- Do not patch code or publish review comments unless the user explicitly asks.
+- Review requests authorize inspection and findings. Patch code only when the user requests implementation. Prepare review comments when requested, and publish them only after satisfying applicable explicit approval requirements. Reuse approval that remains valid for the same target, content, and scope.

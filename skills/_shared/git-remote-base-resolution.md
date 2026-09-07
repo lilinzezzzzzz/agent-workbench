@@ -18,8 +18,8 @@ Use this shared rule whenever a git skill accepts, infers, reviews against, draf
 - Fetch the specific remote branch first, for example `git fetch origin dev`, then use the fetched remote-tracking ref such as `origin/dev`.
 - A successful fetch is required before describing any result as based on the latest remote commit.
 - After a successful fetch, record the base commit SHA with `git rev-parse --verify <base-ref>`.
-- If fetch is skipped, blocked, or fails, stop and report that the latest remote base cannot be verified.
-- Continue with the local cached remote-tracking ref only when the user explicitly allows that downgrade. When downgraded, state that the cached ref may not match the latest remote branch.
+- If fetch is skipped, blocked, or fails, pause steps that require a verified remote base and report the freshness limitation. Continue independent authorized preparation, subject to the calling workflow's explicit gates.
+- Use a cached remote-tracking ref only with explicit user approval; reuse approval that remains applicable, and state that the cached ref may not match the latest remote branch.
 
 ## Reporting
 

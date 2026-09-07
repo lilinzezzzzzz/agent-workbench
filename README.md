@@ -96,7 +96,7 @@ code-agent-workbench/
   `skill`；同步 rules 到 Codex 或 WorkBuddy 时写入 `AGENTS.md` 和顶层
   `references/`；同步 Codex config 时只覆盖模板管理的键，并保留本机专属配置
 - **api-endpoint-analyzer**: 系统化分析 API endpoint 的请求、响应、业务流程与错误处理
-- **git-code-reviewer**: 基于 diff 输出高信号代码审查结论，优先发现 bug、回归和风险
+- **git-code-reviewer**: 显式调用，在提交 PR/MR 前按用户指定 base 审查当前 Python 后端分支的完整已提交差异
 - **git-commit-helper**: 基于 staged diff 生成或执行规范的 Conventional Commit
 - **git-draft-pr-or-mr**: 基于明确 base ref 和真实 git diff 生成精简的 PR/MR 标题与描述
 - **git-restack-from-base**: 基于显式基础分支重新切出版本化分支，并按原顺序 cherry-pick 当前分支独有提交
@@ -196,8 +196,9 @@ skills/<skill-name>/
 当前已维护的 skill 更适合以下场景：
 
 - `api-endpoint-analyzer`：解释接口契约、梳理调用链、核对实现与文档是否一致
-- `git-code-reviewer`：审查 PR、MR、commit 或 diff，输出带 severity 的
-  具体 findings
+- `git-code-reviewer`：显式调用 `$git-code-reviewer`，在提交 PR/MR 前，
+  基于用户明确指定的 base 审查当前 Python 后端分支的完整已提交差异；
+  工作区、单个 commit/diff 和局部审查使用普通代码检查
 - `git-commit-helper`：根据 staged changes 生成 commit message，或在范围清晰时执行提交
 - `git-draft-pr-or-mr`：基于显式 base branch 或 base ref，生成可直接
   粘贴到 GitHub/GitLab 的 PR/MR 文案
