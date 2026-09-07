@@ -6,8 +6,11 @@ description: Load for Python implementation, review, refactor, packaging, depend
 
 Follow the repository's Python version, environment, dependency, framework,
 typing, and test conventions. For greenfield work with no established stack,
-prefer Python 3.11+, `uv`, `pyproject.toml`, Ruff-compatible typing, FastAPI,
-Pydantic v2, SQLAlchemy 2.x, Alembic, AnyIO, HTTPX, and pytest.
+prefer Python 3.11+, `uv`, `pyproject.toml`, Ruff for linting and formatting,
+and pytest. Choose frameworks and libraries according to actual needs:
+prefer FastAPI, Pydantic v2, SQLAlchemy 2.x, and Alembic for applicable service
+and persistence work; apply the async preferences below in projects that
+support async coroutines.
 
 ## Environment And Dependencies
 
@@ -35,11 +38,15 @@ Pydantic v2, SQLAlchemy 2.x, Alembic, AnyIO, HTTPX, and pytest.
   consistent.
 - Use built-in generics. For container annotations, choose the weakest
   `collections.abc` contract that supports every operation the code requires:
-  use `Iterable[T]` for single-pass iteration only, `Sequence[T]` when order,
-  `len()`, or index access is required, `Mapping[K, V]` for key-based reads,
-  and `Set[T]` for membership checks or set operations without ordering. Use
-  concrete `list[T]`, `dict[K, V]`, or `set[T]` when mutation, concrete
-  ownership, or concrete-container behavior is part of the contract.
+  use `Iterable[T]` when only iteration is required, `Sized` for length only,
+  `Container[T]` for membership checks only, and `Collection[T]` for iteration,
+  length, and membership checks. Use `Sequence[T]` for indexed sequence access,
+  `Mapping[K, V]` for key-based reads, and `Set[T]` for set semantics and
+  operations. When mutation is required, consider `MutableSequence[T]`,
+  `MutableMapping[K, V]`, or `MutableSet[T]` before concrete containers. Use
+  `list[T]`, `dict[K, V]`, or `set[T]` when concrete-container behavior or
+  ownership of that concrete type is part of the contract. See the
+  [collection ABC definitions](https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes).
 - On Python 3.9+, import collection ABCs such as `Iterable`, `Sequence`,
   `Mapping`, and `Callable` from `collections.abc`, not their deprecated
   `typing` aliases. Use `typing` for constructs it owns, such as `Any`,
@@ -48,6 +55,20 @@ Pydantic v2, SQLAlchemy 2.x, Alembic, AnyIO, HTTPX, and pytest.
 - Do not annotate a value as `Iterable[T]` when the implementation requires
   repeated traversal, `len()`, indexing, or materialized storage; choose the
   corresponding stronger interface or explicitly materialize it.
+- For generator functions decorated with `@contextmanager`, annotate the
+  return type as `Generator[T, None, None]`; for `@asynccontextmanager`, use
+  `AsyncGenerator[T, None]`. Import these types from `collections.abc` on
+  Python 3.9+. Do not use `Iterator[T]` or `AsyncIterator[T]` for these
+  decorated functions. Spell out the type parameters to support Python 3.11
+  and 3.12, where the trailing parameters have no defaults.
+  The Iterator-based overloads are deprecated in
+  [typeshed](https://github.com/python/typeshed/blob/main/stdlib/contextlib.pyi);
+  this is a typing deprecation, not a Python runtime prohibition.
+- Distinguish generator implementations from context-manager factories:
+  ordinary functions returning an existing context manager should use
+  `AbstractContextManager[T]` or `AbstractAsyncContextManager[T]` from
+  `contextlib`. Keep `Iterator[T]` and `AsyncIterator[T]` for ordinary
+  iteration contracts where appropriate; do not replace them indiscriminately.
 - Use `TypedDict` for a mapping-shaped contract, `dataclass` for a plain data
   carrier, and Pydantic v2 models for validated I/O. Do not use a runtime model
   for a local internal record without validation needs.
@@ -84,8 +105,9 @@ Pydantic v2, SQLAlchemy 2.x, Alembic, AnyIO, HTTPX, and pytest.
   proven circular dependency, optional dependency, startup-cost boundary, or
   framework registration constraint; keep the reason apparent.
 - Use the repository's configured formatter, linter, and type checker. For
-  greenfield work, prefer Ruff and Pylance-compatible typing; do not silence
-  diagnostics without a narrow, documented reason.
+  greenfield work, prefer Ruff for linting and formatting. Follow the project's
+  type-checker configuration for typing validation; Ruff does not replace a
+  type checker. Do not silence diagnostics without a narrow, documented reason.
 - Prefer keyword arguments when they clarify call sites, but preserve public
   call compatibility and conventional positional parameters.
 
@@ -99,9 +121,18 @@ Pydantic v2, SQLAlchemy 2.x, Alembic, AnyIO, HTTPX, and pytest.
   false success.
 - Manage files, streams, clients, sessions, transactions, tasks, and temporary
   resources with context managers or explicit lifecycle ownership.
-- Use AnyIO structured concurrency and task groups for concurrent async work,
-  HTTPX for HTTP clients, and `anyio.to_thread.run_sync` for unavoidable
-  blocking I/O. Propagate cancellation and bound concurrency and resource use.
+- In projects that support async coroutines, prefer AnyIO for structured
+  concurrency and task groups, HTTPX for HTTP clients, and
+  `anyio.to_thread.run_sync` for unavoidable blocking I/O in async paths.
+  Apply this preference to new or materially changed code while preserving
+  compatibility and keeping unrelated migrations out of scope. Propagate
+  cancellation and bound concurrency and resource use.
+- Cancelling a task waiting for a worker thread does not stop the thread.
+  AnyIO shields that wait from cancellation by default; `abandon_on_cancel=True`
+  allows the waiting task to be cancelled while the thread continues running.
+  For blocking operations with external side effects, define underlying I/O
+  timeouts, cooperative cancellation where supported, and resource ownership
+  through completion. See [AnyIO's thread cancellation behavior](https://anyio.readthedocs.io/en/stable/threads.html#running-a-function-in-a-worker-thread).
 
 ## Frameworks And Persistence
 
