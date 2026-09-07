@@ -22,8 +22,8 @@ If `scope` is unnecessary, omit it:
 
 ## Draft With Body
 
-Use when the staged diff contains a small set of tightly related subchanges.
-Format the body as a bulleted list using `- ` prefixes.
+Use when the subject alone cannot convey necessary context for the selected change set.
+Use bullets for parallel subchanges or independently useful facts. Use concise prose for a connected rationale. Follow the user's requested format and applicable repository convention.
 
 ```text
 建议的 commit message:
@@ -46,27 +46,25 @@ BREAKING CHANGE: <what changed for callers>
 
 ## Commit Executed
 
-Use when the user explicitly asked to commit and the staged scope is coherent.
+Use only after observing successful commit creation and verifying the resulting commit. A request to commit or an attempted command is not evidence of success.
 
 ```text
-已执行提交，commit message:
+已提交：<commit-sha>
 
-<type>(<scope>): <subject>
+<exact commit message>
+
+<仅在相关时说明剩余改动>
 ```
 
-If you had to make an assumption, add one short line after the message:
-
-```text
-假设：本次 staged changes 以 <module/behavior> 为单一关注点。
-```
+If useful, explain an evidence-backed classification choice briefly. Do not report commit-scope uncertainty as an assumption after committing. Resolve material scope ambiguity before execution.
 
 ## Blocked Cases
 
 ### Nothing staged
 
-```text
-当前没有 staged changes，无法基于已暂存内容生成可靠的 commit message。
-```
+For a message-only request, use a user-provided diff or explicit range even when nothing is staged. If no usable change set is available, explain the missing evidence and ask which changes to describe.
+
+For a commit request with nothing staged, report that commit execution is blocked by the staging prerequisite. Keep any prepared message explicitly labeled as a draft.
 
 ### Mixed concerns
 

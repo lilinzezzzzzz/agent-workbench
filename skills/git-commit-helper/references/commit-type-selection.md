@@ -1,6 +1,6 @@
 # Commit Type Selection
 
-Use this guide to classify the staged change set. Pick the smallest accurate type that explains the user-visible intent of the change.
+Use this guide to classify the selected change set. Pick the smallest accurate type that explains the user-visible intent of the change.
 
 ## Type Mapping
 
@@ -27,7 +27,7 @@ Use this guide to classify the staged change set. Pick the smallest accurate typ
 - Use imperative mood.
 - Keep it short and concrete.
 - Describe what changed, not why the person changed it.
-- Prefer Chinese by default, but keep domain terms such as `JWT`, `OpenAI API`, `Milvus`, or `CI` in English when clearer.
+- Follow the Skill's language policy: prefer Chinese unless the user or applicable repository convention requires otherwise, and keep domain terms such as `JWT`, `OpenAI API`, `Milvus`, or `CI` in English when clearer.
 - Do not end the subject with punctuation.
 
 ## Body Rules
@@ -40,7 +40,7 @@ Add a body only when one line is not enough. Good reasons include:
 
 Body guidance:
 
-- format the body as a bulleted list using `- ` prefixes
+- use bullets for parallel subchanges or independently useful facts; use concise prose for a connected rationale, following the user's requested format and applicable repository convention
 - each bullet should capture one subchange or one piece of critical context
 - keep bullets concise
 - do not restate the subject verbatim
@@ -76,4 +76,4 @@ Body guidance:
 ## Recommended Output Bias
 
 - Prefer one strong recommendation over several equally plausible messages.
-- If ambiguity remains, state the assumption in one short sentence instead of emitting many options.
+- Use a concise assumption for low-risk classification or wording choices. Do not use an assumption to resolve authorization or commit-scope ambiguity; follow the Skill's clarification boundary.
