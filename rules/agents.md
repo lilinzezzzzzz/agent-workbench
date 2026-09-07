@@ -110,6 +110,12 @@ relevant to the current step. Missing rollout or production-sizing evidence
 blocks only decisions or execution that depend on it; continue independent local
 preparation and state the remaining gap.
 
+When a reference requires an approved policy or mechanism, first look for
+applicable existing approval in repository or organizational evidence.
+Reuse approval that remains valid. If approval is required but unavailable,
+identify the exact dependent action and approval gap; continue independent
+authorized work without treating approval as granted.
+
 ### Loading Rules
 
 - Select references from affected behavior, risk, and files, not keyword

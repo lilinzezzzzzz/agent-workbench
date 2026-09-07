@@ -48,9 +48,13 @@ consumer and source-of-truth generator before editing.
 
 ## Evidence And Conflict Handling
 
-- When docs, tests, schemas, and implementation disagree, determine which is
-  authoritative from runtime usage and repository conventions. Do not silently
-  normalize the inconsistency; report compatibility implications.
+- When docs, tests, schemas, and implementation disagree, distinguish evidence
+  of current behavior from authority for intended behavior. Use implementation
+  and runtime evidence to establish what happens; use applicable user
+  requirements, accepted contracts, and repository decisions to establish
+  what should happen. Do not resolve the disagreement from runtime behavior
+  alone. Report the inconsistency and its impact; ask only when the intended
+  contract remains materially ambiguous after inspecting available evidence.
 - Before deleting or renaming symbols, files, fields, or routes, search static
   references and account for dynamic registration, reflection, generated code,
   external consumers, and persisted data where applicable.
@@ -64,6 +68,7 @@ Before editing or finalizing a review, be able to state:
 
 - The files and instructions that define the current behavior.
 - The intended behavior and affected compatibility or persistence surfaces.
-- The planned files and why each must change.
+- For implementation, the planned files and why they need to change; for review,
+  the inspected scope and evidence supporting findings or a no-findings result.
 - The smallest meaningful verification and any evidence that remains
   unavailable.

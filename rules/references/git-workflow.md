@@ -27,11 +27,13 @@ the user's requested workflow.
 - Follow repository naming and base-branch conventions. If none exists, use a
   concise semantic prefix such as `feature/`, `bugfix/`, `hotfix/`, `docs/`,
   `refactor/`, `test/`, `ci/`, `chore/`, or `release/`.
-- Determine the repository's default branch from explicit user input,
-  repository configuration or documentation, or the selected remote's symbolic
-  HEAD. Support both `main` and `master`; never assume one exists. If multiple
-  plausible default branches remain, report the candidates and ask which ref
-  defines the workflow.
+- Determine the repository's default branch only when the requested workflow
+  depends on it. Use explicit user input, repository configuration or
+  documentation, or the selected remote's symbolic HEAD; never assume `main`
+  or `master`. If ambiguity would change the comparison or operation target,
+  report the candidates and ask which ref to use. Missing default-branch
+  information does not block work whose required refs are already explicit.
+  Preserve workflow-specific requirements for a user-provided base.
 - Resolve ambiguous base names before computing diffs or changing history. For
   PR review, drafting, and restacking, an unqualified `main`, `master`, or
   `dev` normally means the up-to-date remote-tracking ref; report the resolved

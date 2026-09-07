@@ -19,9 +19,11 @@ planning is not a separate approval gate for already authorized work.
    verification, and any compatibility, migration, security, data, external
    state, or rollback concern. Keep the plan proportional to risk and update it
    when scope changes.
-3. **Implement**: make cohesive edits that follow repository patterns. Avoid
-   speculative abstractions and broad formatting; keep affected contracts,
-   configuration, generated artifacts, tests, and user documentation aligned.
+3. **Implement when authorized**: for change requests, make cohesive edits
+   that follow repository patterns. Avoid speculative abstractions and broad
+   formatting; keep affected contracts and supporting artifacts aligned.
+   For review, diagnosis, explanation, or planning requests, inspect evidence
+   and deliver the requested analysis without entering implementation.
 4. **Verify**: run the smallest check capable of falsifying the changed
    behavior, then broaden according to blast radius. Inspect the final diff for
    accidental scope, secrets, generated noise, and compatibility changes.
